@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install flake8 (lint)
+        run: pip install flake8
+      - name: Lint code
+        run: flake8 telealert.py
+      - name: Run quick sanity test
+        env:
+          TELE_TOKEN: fake-token
+          TELE_CHAT_ID: 123456
+        run: |
+          python telealert.py --cmd "echo test"
